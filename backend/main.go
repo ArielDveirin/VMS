@@ -29,5 +29,11 @@ func main() {
 
 	r.GET("/getSources", dbOperations.GetSources)
 
+	r.GET("/playSource", dbOperations.GetSources)
+
+	r.POST("/editsource", dbOperations.EditSource)
+
+	r.POST("/deletesource", dbOperations.DeleteItem)
+
 	r.Run()
 }

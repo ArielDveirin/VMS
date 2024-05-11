@@ -1,13 +1,10 @@
 // material-ui
-import { Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from 'react-router';
+
 // ==============================|| SOURCES PAGE ||============================== //
 
 interface Source {
@@ -17,10 +14,9 @@ interface Source {
   Port: string;
 }
 
-const SourcesPage = () => {
+const SourcesManage = () => {
   const [sources, setSources] = useState<Source[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(true);
 
   const [selectedSource, setSelectedSource] = useState<Source | null>();
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -40,7 +36,7 @@ const SourcesPage = () => {
 
   const handleDeleteClick = async (source: Source) => {
     try {
-      const response = await fetch('http://localhost:3001/deletesource', {
+      const response = await fetch('http://localhost:3002/deleteItem', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({
@@ -107,7 +103,7 @@ const SourcesPage = () => {
 
   const handleEdit = async (source: Source) => {
     try {
-        const response = await fetch('http://localhost:3001/editsource', {
+        const response = await fetch('http://localhost:3001/EditSource', {
           method: 'POST',
           credentials: 'include',
           body: JSON.stringify({
@@ -139,12 +135,6 @@ const SourcesPage = () => {
     setOpenDialog(false);
   };
 
-  const navigate = useNavigate();
-
-  const handlePlay = (source : String) => {
-    navigate("play?source="+source)
-  }
-
   useEffect(() => {
     async function fetchItems() {
       try {
@@ -166,77 +156,103 @@ const SourcesPage = () => {
     fetchItems();
   }, []);
   
-    return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', paddingTop: '0rem', paddingRight:"0rem"}} dir='ltr'>
-
-    {sources
-      .map((source, index) => (
-        <Card key={index} style={{ margin: '1rem', padding: '1rem', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', transition: '0.3s', borderRadius: '4px', height:"20rem", width:"18rem", justifyContent:"center"}}>
-         
-          <CardContent style={{justifyItems:"center"}}>
-
-            <CardMedia component="img" alt={source.Name} style={{ height: '7rem', justifyItems:"center"}}/>
-
-            <CardContent style={{ flexGrow: 1}}>
-              <Typography variant="body1">{source.Name}</Typography>
-              <Typography variant="body2"  fontWeight={'bold'}>
-                Multicast: {source.MultiCastAddress}
-              </Typography>
-              <Typography variant="body2"  fontWeight={'bold'}>
-                Port: {source.Port} 
-              </Typography>
-
-            </CardContent>
-            <CardActions>
-                <Button size="small" color="primary" onClick={() => handlePlay(source.Name)}>
-                <PlayCircleIcon style={{color:"black"}}/>
-                </Button>
-
-              {isAdmin == true &&
-                <Button size="small" color="primary"  onClick={() => {handleEditClick(source)}}>
-                  <EditIcon style={{color:"black"}}/>
-                </Button>
-              
-              }
-              {isAdmin == true &&
-                <Button size="small" color="primary"  onClick={() => {handleDeleteClick(source)}}>
-                  <DeleteIcon style={{color:"black"}}/>
-                </Button>
-              
-              }
-               
-          </CardActions>
-          </CardContent>
-          
-        </Card>
-      ))}
-
-<Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
-        <DialogTitle>Edit Source</DialogTitle>
+  return (
+  <MainCard title="Video Sources">
+    <div style={{paddingTop:"4rem"}}>
+      
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Source ID</TableCell>
+              <TableCell>Source Name</TableCell>
+              <TableCell>MultiCast Address</TableCell>
+              <TableCell>Port</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sources.map((item, index) => (
+              <TableRow key={item.ID}>
+                <TableCell>{item.ID}</TableCell>
+                <TableCell>{item.Name}</TableCell>
+                <TableCell>{item.MultiCastAddress}</TableCell>
+                <TableCell>{item.Port}</TableCell>
+                <TableCell>
+                  Buttons
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Add Item</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Fill in the details for the Source.
           </DialogContentText>
           <TextField
-            label={"Current MulticastAddress: "+selectedSource?.MultiCastAddress}
-            onChange={e => setMultiCastAddress(e.target.value)}   
-         
+            label="Source Name"
+            onChange={e => setSourceName(e.target.value)}            
             fullWidth
             margin="normal"
           />
           <TextField
+            label="Port"
+            onChange={e => setPort(e.target.value)}            
+            
+            type="number"
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="MultiCast Address"
+            onChange={e => setMultiCastAddress(e.target.value)}            
+    
+            fullWidth
+            margin="normal"
+          />
+          
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
+        <DialogTitle>Edit Item</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Fill in the details for the item.
+          </DialogContentText>
+          <TextField
             label={"Current Name: "+selectedSource?.Name}
-            onChange={e => setSourceName(e.target.value)}            
-
+            onChange={e => setSourceName(e.target.value)}   
+         
             fullWidth
             margin="normal"
           />
           <TextField
             label={"Current Port: "+selectedSource?.Port}
             onChange={e => setPort(e.target.value)}            
+
+            type="number"
             fullWidth
             margin="normal"
           />
+          <TextField
+            label={"Current MultiCast Address: "+selectedSource?.MultiCastAddress}
+            onChange={e => setMultiCastAddress(e.target.value)}            
+            type="number"
+            fullWidth
+            margin="normal"
+          />
+          
 
         <Button onClick={() => setOpenEditDialog(false)} color="primary">
             Cancel
@@ -252,8 +268,10 @@ const SourcesPage = () => {
         </DialogContent>
         
       </Dialog>
-  </div>
-    )
+
+    </div>
+  </MainCard>
+  )
   }
 
-export default SourcesPage;
+export default SourcesManage;

@@ -153,9 +153,6 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
       const loginResponse = await fetch('http://localhost:3001/login', {
         method: 'POST',
         //credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ email, password })
       });
     
