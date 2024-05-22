@@ -13,10 +13,11 @@ import (
 )
 
 func IsAdmin(c *gin.Context) bool {
-	tokenString, err := c.Cookie("Auth")
+	tokenString, err := c.Cookie("sessionToken")
 	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
+	//fmt.Println("\n\nADMIN - ", tokenString)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:

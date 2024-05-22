@@ -196,7 +196,9 @@ func EditUser(c *gin.Context) {
 	}
 
 	//result := initializers.DB.Save(&newItem)
-	result := initializers.DB.Model(&body).Where("id = ?", body.ID).Updates(models.User{Email: body.Email, Password: body.Password})
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+
+	result := initializers.DB.Model(&body).Where("id = ?", body.ID).Updates(models.User{Email: body.Email, Password: string(hash), Firstname: body.Firstname, Lastname: body.Lastname, Permission: body.Password})
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "USER COULD NOT BE UPDATED",

@@ -6,6 +6,7 @@ import (
 	initializers "backend/initializers"
 	"backend/middleware"
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +14,24 @@ import (
 func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
+}
+
+func checkAdmin(c *gin.Context) {
+
+	check := middleware.IsAdmin(c)
+	fmt.Println("CHECK::::::", check)
+	if check {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "User IS ADMIN",
+		})
+		fmt.Println("User IS ADMIN")
+
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{
+			"message": "User IS NOT ADMIN",
+		})
+		fmt.Println("User IS NOT ADMIN")
+	}
 }
 
 func main() {
@@ -34,6 +53,13 @@ func main() {
 	r.POST("/editsource", dbOperations.EditSource)
 
 	r.POST("/deletesource", dbOperations.DeleteItem)
+
+	r.GET("/isAdmin", checkAdmin)
+
+	r.GET("/getUsers", middleware.RequireAuth, dbOperations.GetUsers)
+
+	r.POST("/deleteUser", checkAdmin, middleware.RequireAuth, controllers.DeleteUser)
+	r.POST("/EditUser", checkAdmin, middleware.RequireAuth, controllers.EditUser)
 
 	r.Run()
 }

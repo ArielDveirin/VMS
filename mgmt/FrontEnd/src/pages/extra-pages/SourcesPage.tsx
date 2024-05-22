@@ -29,6 +29,21 @@ const SourcesPage = () => {
   const [Port, setPort] = useState("")
   const [MultiCastAddress, setMultiCastAddress] = useState("")
 
+  async function checkAdmin() {
+      const response = await fetch('http://localhost:3001/isAdmin', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        setIsAdmin(true)
+      }
+      else {
+        setIsAdmin(false)
+      }
+    
+    
+  }
+
   const handleEditClick = (source: Source) => {
     setSelectedSource(source);
     setOpenEditDialog(true);
@@ -157,6 +172,7 @@ const SourcesPage = () => {
           const responseBody = await response.text();
           const jsonItems = JSON.parse(responseBody.toString());
           setSources(jsonItems.sources);
+          checkAdmin();
         }
       } catch (error) {
         console.error('Error fetching items:', error);

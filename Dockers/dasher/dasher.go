@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func CorsHeader(c *gin.Context) {
@@ -20,12 +23,34 @@ func CorsHeader(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
 }
 
-func test(c *gin.Context) {
+var DB *gorm.DB
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "HELLO BACK!",
-	})
+func ConnectToDB() {
 
+	var err error
+
+	dsn := os.Getenv("DB_URL")
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	for err != nil {
+		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		time.Sleep(time.Second * 1)
+	}
+
+	fmt.Println("Connection Succesful to DB.")
+
+}
+
+func LoadEnvVariables() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func init() {
+	LoadEnvVariables()
+	ConnectToDB()
 }
 
 func removeOldFiles(dir string, maxAge time.Duration) {
@@ -65,9 +90,18 @@ func removeOldFiles(dir string, maxAge time.Duration) {
 	}
 }
 
+// type Process struct {
+// 	streamID int
+// 	Ctx      ctx.Context
+// 	runDasher     ?
+// }
+
 func main() {
 	fmt.Println("#### DASHER Server Running ####")
 
+
+
+	//func that receives ip port id 
 	exec.Command("mkdir", "stream1").Run()
 	// Command to run the Docker container
 	runDasher := exec.Command(
@@ -88,15 +122,28 @@ func main() {
 	// Execute the run command
 	go runDasher.Run()
 
+
+
+
+
+
+
+
+
+
+
 	r := gin.Default()
 
 	r.Use(CorsHeader)
 
-	r.GET("/hello", test)
-
 	fileDir := "./"
 
 	r.GET("/files/*filepath", func(c *gin.Context) {
+		filepath := c.Param("filepath")
+		c.File(fileDir + filepath)
+	})
+
+	r.POST("/reloadAllStreams", func(c *gin.Context) {
 		filepath := c.Param("filepath")
 		c.File(fileDir + filepath)
 	})

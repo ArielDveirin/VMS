@@ -1,15 +1,16 @@
-version: '3.8'
+version: '3.9'
 
 volumes:
   pgdata:  # Define the pgdata volume
 
 networks:
-  ffmpeg_network:
+  vpcbr:
     driver: bridge
-    # ipam:
-    #   driver: default
-    #   config:
-    #     - subnet: 172.20.0.0/16
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.254
+
 services:
   postgres:
     image: postgres
@@ -22,6 +23,9 @@ services:
       - pgdata:/var/lib/postgresql/data  # Define the volume pgdata
     ports:
       - "5432:5432"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.100
     #network_mode: host  # Attach the container to the host network
 
 
@@ -34,7 +38,8 @@ services:
     ports:
       - "4000:4000"
     networks:
-      - ffmpeg_network
+      vpcbr:
+        ipv4_address: 10.5.0.99
 
 
   ffmpeg1:
@@ -44,7 +49,8 @@ services:
     volumes:
       - ./Multicast/source1.mp4:/input/source1.mp4:ro
     networks:
-      - ffmpeg_network
+      vpcbr:
+        ipv4_address: 10.5.0.1
 
   ffmpeg2:
     image: opencoconut/ffmpeg:latest
@@ -53,7 +59,8 @@ services:
     volumes:
       - ./Multicast/source2.mp4:/input/source2.mp4:ro
     networks:
-      - ffmpeg_network
+      vpcbr:
+        ipv4_address: 10.5.0.2
 
   ffmpeg3:
     image: opencoconut/ffmpeg:latest
@@ -62,7 +69,8 @@ services:
     volumes:
       - ./Multicast/source3.mp4:/input/source3.mp4:ro
     networks:
-      - ffmpeg_network
+      vpcbr:
+        ipv4_address: 10.5.0.3
 
 
   ffmpeg4:
@@ -72,7 +80,8 @@ services:
     volumes:
       - ./Multicast/source4.mp4:/input/source4.mp4:ro
     networks:
-      - ffmpeg_network
+      vpcbr:
+        ipv4_address: 10.5.0.4
 
 
   ffmpeg5:
@@ -82,4 +91,5 @@ services:
     volumes:
       - ./Multicast/source5.mp4:/input/source5.mp4:ro
     networks:
-      - ffmpeg_network
+      vpcbr:
+        ipv4_address: 10.5.0.5

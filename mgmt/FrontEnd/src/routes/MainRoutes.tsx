@@ -9,6 +9,7 @@ import SimpleLayout from 'layout/Simple';
 // types
 import { SimpleLayoutType } from 'types/config';
 import PlaySource from 'pages/extra-pages/playSource';
+import ManageUsersPage from 'pages/extra-pages/manageUsers';
 
 const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));
 const MaintenanceError500 = Loadable(lazy(() => import('pages/maintenance/500')));
@@ -35,6 +36,10 @@ const MainRoutes = {
         {
           path: 'sources/play',
           element: <PlaySource/>
+        },
+        {
+          path: 'manage_users',
+          element: <ManageUsersPage/>
         }
       ]
     },

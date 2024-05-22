@@ -31,7 +31,7 @@ func RequireAuth(c *gin.Context) {
 		if err != nil {
 			fmt.Println("\n\n\n", token)
 		}
-		fmt.Println("\n\n\n", token)
+		//fmt.Println("\n\n\n", token)
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			if float64(time.Now().Unix()) > claims["exp"].(float64) {
 				c.AbortWithStatus(http.StatusUnauthorized)

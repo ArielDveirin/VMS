@@ -20,6 +20,7 @@ WORKDIR /app
 
 # Copy Go source code
 COPY dasher.go .
+COPY .env .
 
 # Initialize go module and build the app
 RUN go mod init my-go-project
