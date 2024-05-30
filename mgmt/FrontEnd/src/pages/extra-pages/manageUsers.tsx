@@ -30,7 +30,7 @@ interface User {
 
 }
 
-const UserPanel = (props: {searchWord: string}) => {
+const UserPanel = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);

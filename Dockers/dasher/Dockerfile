@@ -37,6 +37,8 @@ RUN go build -o myapp dasher.go
 #COPY --from=builder /app/myapp .
 
 # Run the Go application
+USER root
+
 CMD ["./myapp"]
 
 #CMD ["ffmpeg -i udp://239.0.0.1:12345?localaddr=172.20.0.2 -vf scale=640:-2 -c:v libx264 -b:v 500k -profile:v main -preset fast -f dash -min_seg_duration 2000000 stream.mpd"]

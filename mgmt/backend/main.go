@@ -52,6 +52,8 @@ func main() {
 
 	r.POST("/editsource", dbOperations.EditSource)
 
+	r.POST("/addsource", dbOperations.AddSource)
+
 	r.POST("/deletesource", dbOperations.DeleteItem)
 
 	r.GET("/isAdmin", checkAdmin)

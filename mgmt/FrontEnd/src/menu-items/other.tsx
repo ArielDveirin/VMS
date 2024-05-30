@@ -6,7 +6,7 @@ import { BorderOutlined, SlidersOutlined , StopOutlined } from '@ant-design/icon
 
 // type
 import { NavItemType } from 'types/menu';
-
+import DashboardIcon from '@mui/icons-material/Dashboard';
 // icons
 const icons = {
   BorderOutlined,
@@ -34,8 +34,8 @@ const other: NavItemType = {
       id: 'Manage Sources',
       title: <FormattedMessage id="Manage Sources" />,
       type: 'item',
-      url: '/manage_sources',
-      icon: icons.SlidersOutlined,
+      url: '/multiview',
+      icon: DashboardIcon,
     }
   ]
 };

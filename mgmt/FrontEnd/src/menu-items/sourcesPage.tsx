@@ -9,19 +9,35 @@ import { VideoCameraOutlined } from '@ant-design/icons';
 // type
 import { NavItemType } from 'types/menu';
 
+import DashboardIcon from '@mui/icons-material/Dashboard';
 // icons
 const icons = {
-  VideoCameraOutlined
+  VideoCameraOutlined, 
+  DashboardIcon
 };
 
 // ==============================|| MENU ITEMS - Sources PAGE ||============================== //
 
 const sourcesPage: NavItemType = {
-  id: 'Sources',
   title: <FormattedMessage id="Sources" />,
   type: 'group',
-  url: '/sources',
-  icon: icons.VideoCameraOutlined
+  children: [
+    {
+      id: 'Sources',
+      type: 'item',
+      url: 'sources',
+      title: <FormattedMessage id="Sources" />,
+      icon: icons.VideoCameraOutlined,
+    },
+    {
+      id: 'MultiSource Sources',
+      title: <FormattedMessage id="MultiView  Sources" />,
+      type: 'item',
+      url: '/Multi_Source',
+      icon: icons.DashboardIcon,
+    },
+  ]
+ 
 };
 
 export default sourcesPage;

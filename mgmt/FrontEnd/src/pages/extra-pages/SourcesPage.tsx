@@ -1,5 +1,5 @@
 // material-ui
-import { Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -67,13 +67,11 @@ const SourcesPage = () => {
       });
 
       if (!response.ok) {
-          alert('מחיקת הפריט לא צלחה :(');
           throw new Error(`Error! status: ${response.status}`);
         
       }
       else {
       
-          alert('הפריט נמחק!');
           window.location.reload();
       }
 
@@ -99,13 +97,11 @@ const SourcesPage = () => {
         });
   
         if (!response.ok) {
-            alert('שמירת הפריט לא צלחה :(');
 
           throw new Error(`Error! status: ${response.status}`);
           
         }
         else {
-            alert('הפריט נשמר!');
             window.location.reload();
 
 
@@ -134,13 +130,11 @@ const SourcesPage = () => {
         });
   
         if (!response.ok) {
-            alert('עדכון הפריט לא צלחה :(');
 
           throw new Error(`Error! status: ${response.status}`);
           
         }
         else {
-            alert('הפריט עודכן!');
             window.location.reload();
 
         }
@@ -157,7 +151,7 @@ const SourcesPage = () => {
   const navigate = useNavigate();
 
   const handlePlay = (source : String) => {
-    navigate("play?source="+source)
+    navigate("playsource?sourceId="+source)
   }
 
   useEffect(() => {
@@ -187,24 +181,33 @@ const SourcesPage = () => {
 
     {sources
       .map((source, index) => (
-        <Card key={index} style={{ margin: '1rem', padding: '1rem', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', transition: '0.3s', borderRadius: '4px', height:"20rem", width:"18rem", justifyContent:"center"}}>
+        <Card dir="rtl" key={index} style={{ margin: '1rem', padding: '1rem', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', transition: '0.3s', borderRadius: '4px', height:"22rem", width:"18rem", justifyContent:"center"}}>
          
           <CardContent style={{justifyItems:"center"}}>
 
-            <CardMedia component="img" alt={source.Name} style={{ height: '7rem', justifyItems:"center"}}/>
+          <CardMedia
+            component="img"
+            alt={source.Name}
+            image={"https://www.creativefabrica.com/wp-content/uploads/2020/02/10/Video-Graphics-1-1-580x387.png"}  // Use the relative path here
+            style={{ height: '7rem', justifyItems: "center" }}
+            />
+            <br/>
+            <Divider sx={{ borderBottomWidth: '2px', borderColor: 'black' }} />
 
             <CardContent style={{ flexGrow: 1}}>
-              <Typography variant="body1">{source.Name}</Typography>
+
+              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{source.Name}</Typography>
               <Typography variant="body2"  fontWeight={'bold'}>
-                Multicast: {source.MultiCastAddress}
+                מולטיקאסט: {source.MultiCastAddress}
               </Typography>
               <Typography variant="body2"  fontWeight={'bold'}>
-                Port: {source.Port} 
+              <span style={{ fontWeight: 'bold' }}>פורט:</span> {source.Port} 
               </Typography>
 
             </CardContent>
+            <br/>
             <CardActions>
-                <Button size="small" color="primary" onClick={() => handlePlay(source.Name)}>
+                <Button size="small" color="primary" onClick={() => handlePlay(String(source.ID))}>
                 <PlayCircleIcon style={{color:"black"}}/>
                 </Button>
 
@@ -223,7 +226,7 @@ const SourcesPage = () => {
                
           </CardActions>
           </CardContent>
-          
+
         </Card>
       ))}
 

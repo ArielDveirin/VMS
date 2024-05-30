@@ -10,6 +10,8 @@ import SimpleLayout from 'layout/Simple';
 import { SimpleLayoutType } from 'types/config';
 import PlaySource from 'pages/extra-pages/playSource';
 import ManageUsersPage from 'pages/extra-pages/manageUsers';
+import SourcePanel from 'pages/extra-pages/manageSources';
+import MultiSources from 'pages/extra-pages/multiSourcePlayer';
 
 const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));
 const MaintenanceError500 = Loadable(lazy(() => import('pages/maintenance/500')));
@@ -34,12 +36,20 @@ const MainRoutes = {
           element: <SourcesPage />
         },
         {
-          path: 'sources/play',
+          path: 'sources/playsource',
           element: <PlaySource/>
         },
         {
           path: 'manage_users',
           element: <ManageUsersPage/>
+        },
+        {
+          path: 'manage_sources',
+          element: <SourcePanel/>
+        },
+        {
+          path: 'multi_source',
+          element:<MultiSources/>
         }
       ]
     },

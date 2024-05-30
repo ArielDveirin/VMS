@@ -34,7 +34,7 @@ func ConnectToDB() {
 
 	for err != nil {
 		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * 2)
 	}
 
 	fmt.Println("Connection Succesful to DB.")
@@ -58,7 +58,7 @@ func removeOldFiles(dir string, maxAge time.Duration) {
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
 			fmt.Println("Error reading directory:", err)
-			time.Sleep(15000)
+			time.Sleep(time.Second * 3)
 			continue
 		}
 
@@ -84,66 +84,92 @@ func removeOldFiles(dir string, maxAge time.Duration) {
 
 				}
 			}
-
-			time.Sleep(15000)
+			time.Sleep(time.Second * 3)
 		}
+
 	}
 }
 
-// type Process struct {
-// 	streamID int
-// 	Ctx      ctx.Context
-// 	runDasher     ?
-// }
+//	type Process struct {
+//		streamID int
+//		Ctx      ctx.Context
+//		runDasher     ?
+//	}
+type Source struct {
+	gorm.Model
+	Id               string
+	Name             string
+	MultiCastAddress string
+	Port             string
+}
+
+func startDasherSources() {
+
+	var sources []Source
+	result := DB.Find(&sources)
+
+	if result.Error != nil {
+		fmt.Println("Error recieving sources.")
+		return
+	}
+
+	for index, source := range sources {
+
+		exec.Command("mkdir", "stream"+string(source.Id)).Run()
+		// Command to run the Docker container
+		fmt.Print(" Started source: ", source.MultiCastAddress+":"+source.Port+" index: "+string(index))
+		input := "udp://" + source.MultiCastAddress + ":" + source.Port
+		runDasher := exec.Command(
+			"ffmpeg",
+			"-stream_loop", "-1",
+			"-re",
+			"-i", input,
+			"-map", "0:v", // Only map video streams
+			"-c:v", "libx264",
+			"-b:v:0", "800k",
+			"-profile:v:0", "main",
+			"-b:v:1", "300k",
+			"-s:v:1", "320x170",
+			"-profile:v:1", "baseline",
+			"-bf", "1",
+			"-keyint_min", "120",
+			"-g", "120",
+			"-sc_threshold", "0",
+			"-b_strategy", "0",
+			"-use_timeline", "1",
+			"-use_template", "1",
+			"-window_size", "3",
+			"-adaptation_sets", "id=0,streams=v",
+			"-f", "dash",
+			"stream"+string(source.Id)+"/stream.mpd",
+		)
+
+		go removeOldFiles("stream"+string(source.Id), time.Second*15)
+
+		// // Set output to current process's standard output
+		// runDasher.Stdout = os.Stdout
+		// runDasher.Stderr = os.Stderr
+
+		// Execute the run command
+		go runDasher.Run()
+	}
+
+}
 
 func main() {
 	fmt.Println("#### DASHER Server Running ####")
-
-
-
-	//func that receives ip port id 
-	exec.Command("mkdir", "stream1").Run()
-	// Command to run the Docker container
-	runDasher := exec.Command(
-		"ffmpeg",
-		"-i", "udp://235.235.235.235:1111",
-		"-an",
-		"-f", "dash",
-		"-seg_duration", "1",
-		"stream1/stream.mpd",
-	)
-
-	go removeOldFiles("stream1", time.Second*70)
-
-	// // Set output to current process's standard output
-	// runDasher.Stdout = os.Stdout
-	// runDasher.Stderr = os.Stderr
-
-	// Execute the run command
-	go runDasher.Run()
-
-
-
-
-
-
-
-
-
-
 
 	r := gin.Default()
 
 	r.Use(CorsHeader)
 
+	time.Sleep(time.Second * 5)
+
+	go startDasherSources()
+
 	fileDir := "./"
 
 	r.GET("/files/*filepath", func(c *gin.Context) {
-		filepath := c.Param("filepath")
-		c.File(fileDir + filepath)
-	})
-
-	r.POST("/reloadAllStreams", func(c *gin.Context) {
 		filepath := c.Param("filepath")
 		c.File(fileDir + filepath)
 	})

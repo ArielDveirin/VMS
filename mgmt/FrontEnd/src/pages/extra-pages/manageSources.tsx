@@ -16,27 +16,26 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-interface Item {
-  ID?: number;
-  Name: string;
-  Price: string;
-  Quantity: string;
-  ImageUrl: string;
+interface Source {
+    ID: number;
+    Name: string;
+    MultiCastAddress: number;
+    Port: string;
 }
 
 
 
-const ItemPanel = (props: {searchWord: string}) => {
-  const [items, setItems] = useState<Item[]>([]);
+const SourcePanel = () => {
+  const [sources, setSources] = useState<Source[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
-  const [selectedItem, setSelectedItem] = useState<Item | null>();
+  const [selectedSource, setSelectedSource] = useState<Source | null>();
 
-  const [ItemName, setItemName] = useState("")
-  const [ImageUrl, setImageUrl] = useState("")
-  const [Price, setPrice] = useState("")
-  const [Quantity, setQuantity] = useState("")
+  const [SourceID, setSourceID] = useState("")
+  const [Name, setSourceName] = useState("")
+  const [MulticastAddress, setMulticastAddress] = useState("")
+  const [Port, setPort] = useState("")
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [err, setErr] = useState('');
@@ -44,7 +43,7 @@ const ItemPanel = (props: {searchWord: string}) => {
 
   async function checkAdmin() {
     try {
-      const response = await fetch('http://localhost:3002/isAdmin', {
+      const response = await fetch('http://localhost:3001/isAdmin', {
         method: 'GET',
         credentials: 'include',
       });
@@ -63,7 +62,7 @@ const ItemPanel = (props: {searchWord: string}) => {
     (
       async () => {
         try {
-          const response = await fetch('http://localhost:3002/getItems', {
+          const response = await fetch('http://localhost:3001/getSources', {
             method: 'GET',
             credentials: 'include',
           });
@@ -72,8 +71,7 @@ const ItemPanel = (props: {searchWord: string}) => {
             const responseBody = await response.text(); // Get the response text
             
             const jsonItems = JSON.parse((responseBody.toString()));
-
-            setItems(jsonItems.items);
+            setSources(jsonItems.sources);
             
           } else {
             // Handle the case where the API request is not successful
@@ -87,8 +85,8 @@ const ItemPanel = (props: {searchWord: string}) => {
 
   // const data = await response.json();
   //setItems(data);
-  const handleEditClick = (item: Item) => {
-    setSelectedItem(item);
+  const handleEditClick = (source: Source) => {
+    setSelectedSource(source);
     setOpenEditDialog(true);
   };
 
@@ -96,27 +94,25 @@ const ItemPanel = (props: {searchWord: string}) => {
     setOpenDialog(true);
   };
 
-  const handleDeleteClick = async (item: Item) => {
+  const handleDeleteClick = async (source: Source) => {
     try {
-      const response = await fetch('http://localhost:3002/deleteItem', {
+      const response = await fetch('http://localhost:3001/deleteSource', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({
-            Name: item.Name,
-            Quantity: item.Quantity,
-            Price: item.Price,
-            Item_Id: item.ID,
+            Name: source.Name,
+            Port: source.Port,
+            MulticastAddress: source.MultiCastAddress,
+            SourceID: source.ID,
          }),
       });
 
       if (!response.ok) {
-          alert('מחיקת הפריט לא צלחה :(');
           throw new Error(`Error! status: ${response.status}`);
         
       }
       else {
       
-          alert('הפריט נמחק!');
           window.location.reload();
       }
 
@@ -131,25 +127,22 @@ const ItemPanel = (props: {searchWord: string}) => {
 
   const handleSave = async () => {
     try {
-        const response = await fetch('http://localhost:3002/addItem', {
+        const response = await fetch('http://localhost:3001/addsource', {
           method: 'POST',
           credentials: 'include',
           body: JSON.stringify({
-              Name: ItemName,
-              Quantity: Quantity,
-              Price: Price,
-              ImageUrl: ImageUrl
+            Name: Name,
+            Port: Port,
+            MulticastAddress: MulticastAddress,
            }),
         });
   
         if (!response.ok) {
-            alert('שמירת הפריט לא צלחה :(');
 
           throw new Error(`Error! status: ${response.status}`);
           
         }
         else {
-            alert('הפריט נשמר!');
             window.location.reload();
 
 
@@ -164,28 +157,25 @@ const ItemPanel = (props: {searchWord: string}) => {
     setOpenDialog(false);
   };
 
-  const handleEdit = async (item: Item) => {
+  const handleEdit = async (source: Source) => {
     try {
-        const response = await fetch('http://localhost:3002/EditItem', {
+        const response = await fetch('http://localhost:3001/EditSource', {
           method: 'POST',
           credentials: 'include',
           body: JSON.stringify({
-              Name: ItemName,
-              Quantity: Quantity,
-              Price: Price,
-              ID: item.ID,
-              ImageUrl: ImageUrl
+            Name: source.Name,
+            Port: source.Port,
+            MulticastAddress: source.MultiCastAddress,
+            SourceID: source.ID,
            }),
         });
   
         if (!response.ok) {
-            alert('עדכון הפריט לא צלחה :(');
 
           throw new Error(`Error! status: ${response.status}`);
           
         }
         else {
-            alert('הפריט עודכן!');
             window.location.reload();
 
         }
@@ -207,38 +197,37 @@ const ItemPanel = (props: {searchWord: string}) => {
   return (
     <div style={{paddingTop:"4rem"}}>
       <Button variant="contained" color="primary" onClick={handleAddClick}>
-        Add Item
+        Add Source
       </Button>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Item ID</TableCell>
-              <TableCell>Item Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Amount in Stock</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell>Source ID</TableCell>
+              <TableCell>Source Name</TableCell>
+              <TableCell>Multicast Address</TableCell>
+              <TableCell>Port</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.filter(item =>  item.Name.includes(props.searchWord)).map((item, index) => (
-              <TableRow key={item.ID}>
-                <TableCell>{item.ID}</TableCell>
-                <TableCell>{item.Name}</TableCell>
-                <TableCell>{item.Price}</TableCell>
-                <TableCell>{item.Quantity}</TableCell>
+            {sources.map((source, index) => (
+              <TableRow key={source.ID}>
+                <TableCell>{source.ID}</TableCell>
+                <TableCell>{source.Name}</TableCell>
+                <TableCell>{source.MultiCastAddress}</TableCell>
+                <TableCell>{source.Port}</TableCell>
                 <TableCell>
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => {handleEditClick(item)}}
+                    onClick={() => {handleEditClick(source)}}
                   >
                     Edit
                   </Button>
                   <Button
                     variant="outlined"
                     color="secondary"
-                    onClick={() => {handleDeleteClick(item)}}
+                    onClick={() => {handleDeleteClick(source)}}
                   >
                     Delete
                   </Button>
@@ -249,40 +238,33 @@ const ItemPanel = (props: {searchWord: string}) => {
         </Table>
       </TableContainer>
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Add Item</DialogTitle>
+        <DialogTitle>Add Source</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Fill in the details for the item.
+            Fill in the details for the Source.
           </DialogContentText>
           <TextField
-            label="Item Name"
-            onChange={e => setItemName(e.target.value)}            
+            label="Source Name"
+            onChange={e => setSourceName(e.target.value)}            
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Price"
-            onChange={e => setPrice(e.target.value)}            
+            label="MultiCast Address"
+            onChange={e => setMulticastAddress(e.target.value)}            
             
-            type="number"
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Amount in Stock"
-            onChange={e => setQuantity(e.target.value)}            
+            label="Port"
+            onChange={e => setPort(e.target.value)}            
     
             type="number"
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="ImageUrl"
-            onChange={e => setImageUrl(e.target.value)}            
-    
-            fullWidth
-            margin="normal"
-          />
+          
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)} color="primary">
@@ -295,48 +277,41 @@ const ItemPanel = (props: {searchWord: string}) => {
       </Dialog>
       
       <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
-        <DialogTitle>Edit Item</DialogTitle>
+        <DialogTitle>Edit Source</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Fill in the details for the item.
+            Fill in the details for the Source.
           </DialogContentText>
           <TextField
-            label={"Current Name: "+selectedItem?.Name}
-            onChange={e => setItemName(e.target.value)}   
+            label={"Current Name: "+ selectedSource?.Name}
+            onChange={e => setSourceName(e.target.value)}   
          
             fullWidth
             margin="normal"
           />
           <TextField
-            label={"Current Price: "+selectedItem?.Price}
-            onChange={e => setPrice(e.target.value)}            
+            label={"Current Multicast Address: "+selectedSource?.MultiCastAddress}
+            onChange={e => setMulticastAddress(e.target.value)}            
 
             type="number"
             fullWidth
             margin="normal"
           />
           <TextField
-            label={"Current Quantity: "+selectedItem?.Quantity}
-            onChange={e => setQuantity(e.target.value)}            
+            label={"Current Port: "+selectedSource?.Port}
+            onChange={e => setPort(e.target.value)}            
             type="number"
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="ImageUrl"
-            onChange={e => setImageUrl(e.target.value)}            
-    
-            fullWidth
-            margin="normal"
-          />
-
+         
         <Button onClick={() => setOpenEditDialog(false)} color="primary">
             Cancel
           </Button>
           <Button  onClick={() => {
-                if (selectedItem) 
+                if (selectedSource) 
                 {
-                  handleEdit(selectedItem);
+                  handleEdit(selectedSource);
                 }
           }} color="primary">
             Save
@@ -357,4 +332,4 @@ const ItemPanel = (props: {searchWord: string}) => {
             }
 };
 
-export default ItemPanel;
+export default SourcePanel;
