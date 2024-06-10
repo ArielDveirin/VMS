@@ -186,6 +186,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
       setSession(content.token);
       bake_cookie("sessionToken" , content.token)
+      window.location.reload();
       dispatch({
         type: LOGIN,
         payload: {

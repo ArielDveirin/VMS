@@ -71,23 +71,23 @@ services:
         ipv4_address: 10.5.0.3
 
 
-  ffmpeg4:
-     image: opencoconut/ffmpeg:latest
-     container_name: source4
-     command: ["-re", "-stream_loop", "-1", "-i", "/input/source4.mp4", "-vcodec", "copy", "-acodec", "copy", "-f", "mpegts", "udp://235.235.235.235:44444?pkt_size=1316"]
-     volumes:
-       - ./Multicast/source5.mp4:/input/source4.mp4:ro
-     networks:
-       vpcbr:
-         ipv4_address: 10.5.0.4
+  # ffmpeg4:
+  #    image: opencoconut/ffmpeg:latest
+  #    container_name: source4
+  #    command: ["-re", "-stream_loop", "-1", "-i", "/input/source4.mp4", "-vcodec", "copy", "-acodec", "copy", "-f", "mpegts", "udp://235.235.235.235:44444?pkt_size=1316"]
+  #    volumes:
+  #      - ./Multicast/source5.mp4:/input/source4.mp4:ro
+  #    networks:
+  #      vpcbr:
+  #        ipv4_address: 10.5.0.4
 
 
-  ffmpeg5:
-     image: opencoconut/ffmpeg:latest
-     container_name: source5
-     command: ["-re", "-stream_loop", "-1", "-i", "/input/source5.mp4", "-vcodec", "copy", "-acodec", "copy", "-f", "mpegts", "udp://235.235.235.235:55555?pkt_size=1316"]
-     volumes:
-       - ./Multicast/source4.mp4:/input/source5.mp4:ro
-     networks:
-       vpcbr:
-         ipv4_address: 10.5.0.5
+  # ffmpeg5:
+  #    image: opencoconut/ffmpeg:latest
+  #    container_name: source5
+  #    command: ["-re", "-stream_loop", "-1", "-i", "/input/source5.mp4", "-vcodec", "copy", "-acodec", "copy", "-f", "mpegts", "udp://235.235.235.235:55555?pkt_size=1316"]
+  #    volumes:
+  #      - ./Multicast/source4.mp4:/input/source5.mp4:ro
+  #    networks:
+  #      vpcbr:
+  #        ipv4_address: 10.5.0.5

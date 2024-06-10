@@ -19,19 +19,19 @@ const icons = {
 // ==============================|| MENU ITEMS - Sources PAGE ||============================== //
 
 const sourcesPage: NavItemType = {
-  title: <FormattedMessage id="Sources" />,
+  title: <FormattedMessage id="שידורים" />,
   type: 'group',
   children: [
     {
-      id: 'Sources',
+      id: 'sources',
       type: 'item',
       url: 'sources',
-      title: <FormattedMessage id="Sources" />,
+      title: <FormattedMessage id="שידורים חיים" />,
       icon: icons.VideoCameraOutlined,
     },
     {
       id: 'MultiSource Sources',
-      title: <FormattedMessage id="MultiView  Sources" />,
+      title: <FormattedMessage id="פיצול נגנים" />,
       type: 'item',
       url: '/Multi_Source',
       icon: icons.DashboardIcon,

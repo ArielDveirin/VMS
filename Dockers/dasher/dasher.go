@@ -58,7 +58,7 @@ func removeOldFiles(dir string, maxAge time.Duration) {
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
 			fmt.Println("Error reading directory:", err)
-			time.Sleep(time.Second * 3)
+			time.Sleep(time.Second * 1)
 			continue
 		}
 
@@ -84,7 +84,7 @@ func removeOldFiles(dir string, maxAge time.Duration) {
 
 				}
 			}
-			time.Sleep(time.Second * 3)
+			time.Sleep(time.Second * 10)
 		}
 
 	}
@@ -138,7 +138,7 @@ func startDasherSources() {
 			"-b_strategy", "0",
 			"-use_timeline", "1",
 			"-use_template", "1",
-			"-window_size", "3",
+			"-window_size", "1",
 			"-adaptation_sets", "id=0,streams=v",
 			"-f", "dash",
 			"stream"+string(source.Id)+"/stream.mpd",

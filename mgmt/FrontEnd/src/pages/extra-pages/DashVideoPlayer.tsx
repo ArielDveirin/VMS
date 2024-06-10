@@ -14,6 +14,9 @@ const VideoPlayer: React.FC<DashPlayerProps> = ({ url }) => {
     if (videoRef.current) {
       const player = dashjs.MediaPlayer().create();
       player.initialize(videoRef.current, url, true);
+      player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
+        console.log('Dash.js stream initialized');
+      });
       return () => {
         player.reset();
       };

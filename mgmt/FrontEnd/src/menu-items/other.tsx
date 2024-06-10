@@ -20,21 +20,21 @@ const icons = {
 
 const other: NavItemType = {
   id: 'other',
-  title: <FormattedMessage id="Management Pages" />,
+  title: <FormattedMessage id="עמודי ניהול" />,
   type: 'group',
   children: [
     {
       id: 'Manage Sources',
-      title: <FormattedMessage id="Manage Users" />,
+      title: <FormattedMessage id="ניהול משתמשים" />,
       type: 'item',
       url: '/manage_users',
       icon: icons.SlidersOutlined,
     },
     {
       id: 'Manage Sources',
-      title: <FormattedMessage id="Manage Sources" />,
+      title: <FormattedMessage id="ניהול שידורים" />,
       type: 'item',
-      url: '/multiview',
+      url: '/manage_sources',
       icon: DashboardIcon,
     }
   ]
